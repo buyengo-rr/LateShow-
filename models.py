@@ -28,3 +28,22 @@ class Guest(db.Model):
             "name": self.name,
             "occupation": self.occupation
         }
+class Appearance(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer, nullable=False)
+    episode_id = db.Column(db.Integer, db.ForeignKey('episode.id'), nullable=False)
+    guest_id = db.Column(db.Integer, db.ForeignKey('guest.id'), nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "rating": self.rating,
+            "guest_id": self.guest_id,
+            "episode_id": self.episode_id,
+            "episode": {
+                "date": self.episode.date,
+                "id": self.episode.id,
+                "number": self.episode.number
+            },
+            "guest": self.guest.to_dict()
+        }
