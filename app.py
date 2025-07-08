@@ -39,4 +39,24 @@ def get_episode(id):
 def get_guests():
     guests = Guest.query.all()
     return jsonify([g.to_dict() for g in guests])
+@app.route('/appearances', methods=['POST'])
+def create_appearance():
+    data = request.json
+    rating = data.get("rating")
+    episode_id = data.get("episode_id")
+    guest_id = data.get("guest_id")
+    if not (1 <= rating <= 5):
+        return jsonify({"errors": ["validation errors"]}), 400
+    episode = Episode.query.get(episode_id)
+    guest = Guest.query.get(guest_id)
+    if not episode or not guest:
+        return jsonify({"errors": ["validation errors"]}), 400
+    appearance = Appearance(rating=rating, episode_id=episode_id, guest_id=guest_id)
+    db.session.add(appearance)
+    db.session.commit()
+    return jsonify(appearance.to_dict()), 201
+
+
+if __name__ == '__main__':
+    app.run()
 
